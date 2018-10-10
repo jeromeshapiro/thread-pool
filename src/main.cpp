@@ -9,8 +9,12 @@
 
 static const uint count = 5;
 
-void test_func(int i) {
-    std::cout << "func " << i << std::endl;
+void test_func_1(int i) {
+    std::cout << "func 1: " << i << std::endl;
+}
+
+void test_func_2(int i, int j) {
+    std::cout << "func 2: " << i << " | " << j << std::endl;
 }
 
 typedef std::function<void()> Task;
@@ -20,18 +24,10 @@ class Thread {
         std::thread _thread;
         std::vector<Task> _tasks;
         bool _active = true;
-        bool _notified = false;
     public:
         Thread(int tid) {
-            std::cout << "spawning thread " << tid << std::endl;
-
             _thread = std::thread([=]() mutable {
                 while (_active == true) {
-                    if (_notified == false) {
-                        std::cout << "polling for tasks on thread " << tid << std::endl;
-                        _notified = true;
-                    }
-
                     if (!_tasks.empty()) {
                         // get task
                         auto task = _tasks.front();
@@ -69,10 +65,10 @@ class ThreadPool {
             }
         }
         
-        template<typename Func>
-        void assign(Func function, int i) {
-            _thread_pool[0]->assign([&function, i](){
-                function(i);
+        template<typename Func, typename ... Arg>
+        void assign(Func function, Arg ... arg) {
+            _thread_pool[0]->assign([=](){
+                function(arg...);
             });
         }
 };
@@ -80,13 +76,11 @@ class ThreadPool {
 int main() {
     auto threadPool = std::make_unique<ThreadPool>(5);
 
-    usleep(3000000);
+    threadPool->assign(test_func_1, 0);
+    threadPool->assign(test_func_2, 1, 11);
+    threadPool->assign(test_func_2, 2, 22);
 
-    threadPool->assign(test_func, 0);
-    threadPool->assign(test_func, 1);
-    threadPool->assign(test_func, 2);
-
-    usleep(3000000);
+    std::cin.get();
 
     return 0;
 }
