@@ -10,14 +10,15 @@
 static const uint count = 5;
 
 void test_func(int i) {
-    std::cout << "func " << std::endl;
+    std::cout << "func " << i << std::endl;
 }
 
-template<typename F>
+typedef std::function<void()> Task;
+
 class Thread {
     private:
         std::thread _thread;
-        std::vector<std::function<F>> _tasks;
+        std::vector<Task> _tasks;
         bool _active = true;
         bool _notified = false;
     public:
@@ -46,17 +47,16 @@ class Thread {
             });
         }
 
-        void assign(std::function<F> task) {
+        void assign(Task task) {
             _tasks.push_back(task);
         }
 };
 
-template<typename F>
 class ThreadPool {
     private:
         size_t _thread_count;
-        std::unique_ptr<Thread<F>> _thread_pool[count];
-        std::vector<std::function<F>> _unassigned_tasks;
+        std::unique_ptr<Thread> _thread_pool[count];
+        std::vector<Task> _unassigned_tasks;
 
     public:
         ThreadPool(size_t thread_count) :
@@ -65,23 +65,26 @@ class ThreadPool {
             auto tid = 0;
 
             for (auto &_thread : _thread_pool) {
-                _thread = std::make_unique<Thread<F>>(tid++);
+                _thread = std::make_unique<Thread>(tid++);
             }
         }
-
-        void assign(std::function<F> task) {
-            _thread_pool[0]->assign(std::bind(task, 1));
+        
+        template<typename Func>
+        void assign(Func function, int i) {
+            _thread_pool[0]->assign([&function, i](){
+                function(i);
+            });
         }
 };
 
 int main() {
-    auto threadPool = std::make_unique<ThreadPool<void(int)>>(5);
+    auto threadPool = std::make_unique<ThreadPool>(5);
 
     usleep(3000000);
 
-    threadPool->assign(test_func);
-    threadPool->assign(test_func);
-    threadPool->assign(test_func);
+    threadPool->assign(test_func, 0);
+    threadPool->assign(test_func, 1);
+    threadPool->assign(test_func, 2);
 
     usleep(3000000);
 
