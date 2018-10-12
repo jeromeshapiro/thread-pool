@@ -66,8 +66,8 @@ class ThreadPool {
         
         template<typename Func, typename ... Arg>
         auto assign(Func&& func, Arg&& ... args) -> std::future<decltype(func(args...))> {
-            std::function<decltype(func(args...))()> exec = std::bind(std::forward<Func>(func), std::forward<Arg>(args)...);
-            auto task = std::make_shared<std::packaged_task<decltype(func(args...))()>>(std::bind(func, args...));
+            std::function<decltype(func(args...))()> callable = std::bind(std::forward<Func>(func), std::forward<Arg>(args)...);
+            auto task = std::make_shared<std::packaged_task<decltype(func(args...))()>>(callable);
 
             _thread_pool[0]->assign([task](){
                 (*task)();
