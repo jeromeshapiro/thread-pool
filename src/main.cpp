@@ -4,8 +4,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
-
-#include <unistd.h>
+#include <future>
 
 static const uint count = 5;
 
@@ -13,8 +12,8 @@ void test_func_1(int i) {
     std::cout << "func 1: " << i << std::endl;
 }
 
-void test_func_2(int i, int j) {
-    std::cout << "func 2: " << i << " | " << j << std::endl;
+int test_func_2(int i) {
+    return i * 2;
 }
 
 typedef std::function<void()> Task;
@@ -66,19 +65,25 @@ class ThreadPool {
         }
         
         template<typename Func, typename ... Arg>
-        void assign(Func function, Arg ... arg) {
-            _thread_pool[0]->assign([=](){
-                function(arg...);
+        auto assign(Func&& func, Arg&& ... args) -> std::future<decltype(func(args...))> {
+            std::function<decltype(func(args...))()> exec = std::bind(std::forward<Func>(func), std::forward<Arg>(args)...);
+            auto task = std::make_shared<std::packaged_task<decltype(func(args...))()>>(std::bind(func, args...));
+
+            _thread_pool[0]->assign([task](){
+                (*task)();
             });
+
+            return task->get_future();
         }
 };
 
 int main() {
-    auto threadPool = std::make_unique<ThreadPool>(5);
+    auto pool = std::make_unique<ThreadPool>(5);
 
-    threadPool->assign(test_func_1, 0);
-    threadPool->assign(test_func_2, 1, 11);
-    threadPool->assign(test_func_2, 2, 22);
+    pool->assign(test_func_1, 0);
+    auto f = pool->assign(test_func_2, 120);
+
+    std::cout << f.get() << std::endl;
 
     std::cin.get();
 
