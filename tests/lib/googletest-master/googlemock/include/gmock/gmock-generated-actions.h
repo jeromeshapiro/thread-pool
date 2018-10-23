@@ -935,7 +935,7 @@ DoAll(Action1 a1, Action2 a2, Action3 a3, Action4 a4, Action5 a5, Action6 a6,
 // In particular, you can provide the template type arguments
 // explicitly when invoking Foo(), as in Foo<long, bool>(5, false);
 // although usually you can rely on the compiler to infer the types
-// for you automatically.  You can assign the result of expression
+// for you automatically.  You can assignTask the result of expression
 // Foo(p1, ..., pk) to a variable of type FooActionPk<p1_type, ...,
 // pk_type>.  This can be useful when composing actions.
 //

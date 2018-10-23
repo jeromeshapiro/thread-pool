@@ -195,7 +195,7 @@ GTEST_API_ void IllegalDoDefault(const char* file, int line) {
       "You are using DoDefault() inside a composite action like "
       "DoAll() or WithArgs().  This is not supported for technical "
       "reasons.  Please instead spell out the default action, or "
-      "assign the default action to an Action variable and use "
+      "assignTask the default action to an Action variable and use "
       "the variable in various places.");
 }
 

@@ -6,10 +6,10 @@
 #include <future>
 #include <functional>
 
-#include <thread_pool.h>
-#include <runner.h>
+#include <worker_pool.h>
+#include <worker.h>
 
-int ThreadPool::delegateRunner() {
+int WorkerPool::delegateRunner() {
     if (i == thread_count) {
         i = 0;
     }
@@ -17,14 +17,14 @@ int ThreadPool::delegateRunner() {
     return i++;
 }
 
-ThreadPool::ThreadPool(size_t c) : thread_count(c), thread_pool(c) {
+WorkerPool::WorkerPool(size_t c) : thread_count(c), thread_pool(c) {
     for (auto i = 0; i < thread_count; i++) {
-        thread_pool[i] = std::make_unique<Runner>(i);
+        thread_pool[i] = std::make_unique<Worker>(i);
     }
 }
 
 template<typename Func, typename ... Arg>
-auto ThreadPool::assign(Func&& func, Arg&& ... args) -> std::future<decltype(func(args...))> {
+auto WorkerPool::assign(Func&& func, Arg&& ... args) -> std::future<decltype(func(args...))> {
     std::function<decltype(func(args...))()> callable = std::bind(std::forward<Func>(func),
             std::forward<Arg>(args)...);
 
@@ -32,7 +32,7 @@ auto ThreadPool::assign(Func&& func, Arg&& ... args) -> std::future<decltype(fun
 
     auto delegatedRunner = delegateRunner();
 
-    thread_pool[delegatedRunner]->assign([task]() {
+    thread_pool[delegatedRunner]->assignTask([task]() {
         (*task)();
     });
 

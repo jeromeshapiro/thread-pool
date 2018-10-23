@@ -365,7 +365,7 @@ $$   // show up in the generated code.
 // explicitly instantiating the template, as in Foo<long, bool>(5,
 // false).  As said earlier, you don't get to (or need to) specify
 // 'arg_type' as that's determined by the context in which the matcher
-// is used.  You can assign the result of expression Foo(p1, ..., pk)
+// is used.  You can assignTask the result of expression Foo(p1, ..., pk)
 // to a variable of type FooMatcherPk<p1_type, ..., pk_type>.  This
 // can be useful when composing matchers.
 //

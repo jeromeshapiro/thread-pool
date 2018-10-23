@@ -409,7 +409,7 @@ typedef FloatingPoint<float> Float;
 typedef FloatingPoint<double> Double;
 
 // In order to catch the mistake of putting tests that use different
-// test fixture classes in the same test case, we need to assign
+// test fixture classes in the same test case, we need to assignTask
 // unique IDs to fixture classes and compare them.  The TypeId type is
 // used to hold such IDs.  The user should treat TypeId as an opaque
 // type: the only operation allowed on TypeId values is to compare

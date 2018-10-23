@@ -3021,7 +3021,7 @@ You can assign the result of expression `Foo(p1, ..., pk)` to a
 variable of type `FooMatcherPk<p1_type, ..., pk_type>`.  This can be
 useful when composing matchers.  Matchers that don't have a parameter
 or have only one parameter have special types: you can assign `Foo()`
-to a `FooMatcher`-typed variable, and assign `Foo(p)` to a
+to a `FooMatcher`-typed variable, and assignTask `Foo(p)` to a
 `FooMatcherP<p_type>`-typed variable.
 
 While you can instantiate a matcher template with reference types,

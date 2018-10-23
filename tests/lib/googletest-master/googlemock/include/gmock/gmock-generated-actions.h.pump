@@ -368,7 +368,7 @@ $range j2 2..i
 // In particular, you can provide the template type arguments
 // explicitly when invoking Foo(), as in Foo<long, bool>(5, false);
 // although usually you can rely on the compiler to infer the types
-// for you automatically.  You can assign the result of expression
+// for you automatically.  You can assignTask the result of expression
 // Foo(p1, ..., pk) to a variable of type FooActionPk<p1_type, ...,
 // pk_type>.  This can be useful when composing actions.
 //
